@@ -4,7 +4,7 @@ import BookList from "./components/BookList";
 
 const Home = () => {
   const [books, setBooks] = useState([]);
-  const [sortedBooks, setSortedBooks] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [searchTrigger, setSearchTrigger] = useState(false);
   const [error, setError] = useState();
@@ -33,22 +33,19 @@ const Home = () => {
           </p>
         );
         setBooks([]);
-        setSortedBooks([]);
       } else {
         setBooks(data.docs || []);
-        setSortedBooks(data.docs || []);
       }
     } catch (err) {
       setError("Failed to fetch books. Please try again.", err);
       setBooks([]);
-      setSortedBooks([]);
     } finally {
       setLoading(false);
     }
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sortedBooks.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - books.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -60,7 +57,7 @@ const Home = () => {
   };
 
   const handleSortedBooksChange = (sortedArray) => {
-    setSortedBooks(sortedArray);
+    setBooks(sortedArray);
   };
 
   return (
@@ -74,9 +71,9 @@ const Home = () => {
 
       <BookList
         error={error}
-        sortedBooks={sortedBooks}
         books={books}
         loading={loading}
+        searchTrigger={searchTrigger}
         page={page}
         rowsPerPage={rowsPerPage}
         emptyRows={emptyRows}

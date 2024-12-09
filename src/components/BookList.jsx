@@ -8,12 +8,12 @@ import {
 } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import Pagination from "./Pagination";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
 const BookList = ({
   books = [],
-  sortedBooks = [],
   loading,
+
   error,
   page,
   rowsPerPage,
@@ -23,6 +23,12 @@ const BookList = ({
   onSortedBooksChange,
 }) => {
   const [sortOption, setSortOption] = useState("default");
+
+  useEffect(() => {
+    if (loading) {
+      setSortOption("default");
+    }
+  }, [loading]);
 
   const handleSortChange = (event) => {
     const newSortOption = event.target.value;
@@ -108,11 +114,11 @@ const BookList = ({
           </TableHead>
           <TableBody>
             {(rowsPerPage !== null
-              ? sortedBooks.slice(
+              ? books.slice(
                   page * rowsPerPage,
                   page * rowsPerPage + rowsPerPage
                 )
-              : sortedBooks
+              : books
             ).map((book) => (
               <TableRow key={book.key}>
                 <TableCell component="th" scope="row">
