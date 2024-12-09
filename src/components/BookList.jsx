@@ -8,9 +8,11 @@ import {
 } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import Pagination from "./Pagination";
-
+import { useState } from "react";
+import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
 const BookList = ({
   books = [],
+  sortedBooks = [],
   loading,
   error,
   page,
@@ -18,7 +20,33 @@ const BookList = ({
   emptyRows,
   handleChangePage,
   handleChangeRowsPerPage,
+  onSortedBooksChange,
 }) => {
+  const [sortOption, setSortOption] = useState("default");
+
+  const handleSortChange = (event) => {
+    const newSortOption = event.target.value;
+    setSortOption(newSortOption);
+    sortBooks(books, newSortOption);
+  };
+
+  const sortBooks = (books, option) => {
+    let sortedArray = [...books];
+
+    switch (option) {
+      case "oldest":
+        sortedArray.sort((a, b) => a.first_publish_year - b.first_publish_year);
+        break;
+      case "newest":
+        sortedArray.sort((a, b) => b.first_publish_year - a.first_publish_year);
+        break;
+      default:
+        break;
+    }
+
+    onSortedBooksChange(sortedArray);
+  };
+
   if (loading) {
     return (
       <div
@@ -44,37 +72,7 @@ const BookList = ({
           height: "100%",
         }}
       >
-        <p
-          style={{
-            textAlign: "center",
-            color: "#AEAEAE",
-          }}
-        >
-          {error}
-        </p>
-      </div>
-    );
-  }
-
-  if (loading && books.length === 0) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100%",
-        }}
-      >
-        <p
-          style={{
-            textAlign: "center",
-            color: "#AEAEAE",
-          }}
-        >
-          <span>No books found!</span> <br />
-          <span>Please try again</span>
-        </p>
+        {error}
       </div>
     );
   }
@@ -82,6 +80,22 @@ const BookList = ({
   if (books.length > 0) {
     return (
       <>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "1rem",
+          }}
+        >
+          <FormControl variant="outlined" sx={{ width: "200px" }}>
+            <InputLabel>Sort</InputLabel>
+            <Select label="Sort" value={sortOption} onChange={handleSortChange}>
+              <MenuItem value="default">Default</MenuItem>
+              <MenuItem value="oldest">Oldest</MenuItem>
+              <MenuItem value="newest">Newest</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
         <Table>
           <TableHead>
             <TableRow>
@@ -94,11 +108,11 @@ const BookList = ({
           </TableHead>
           <TableBody>
             {(rowsPerPage !== null
-              ? books.slice(
+              ? sortedBooks.slice(
                   page * rowsPerPage,
                   page * rowsPerPage + rowsPerPage
                 )
-              : books
+              : sortedBooks
             ).map((book) => (
               <TableRow key={book.key}>
                 <TableCell component="th" scope="row">
