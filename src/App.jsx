@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SearchBar from "./components/SearchBar";
 import BookList from "./components/BookList";
-
+import { Analytics } from "@vercel/analytics/react";
 const Home = () => {
   const [books, setBooks] = useState([]);
 
@@ -81,6 +81,7 @@ const Home = () => {
         handleChangeRowsPerPage={handleChangeRowsPerPage}
         onSortedBooksChange={handleSortedBooksChange}
       />
+      <Analytics />
     </div>
   );
 };
